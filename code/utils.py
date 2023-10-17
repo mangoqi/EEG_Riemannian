@@ -5,7 +5,7 @@ import yaml
 
 def load_config(name):
     with open(os.path.join(sys.path[0], name)) as file:
-        config = yaml.safe_load(file)
+        config = yaml.safe_load(file) # 获取配置文件的参数，返回python字典
 
     return config
 

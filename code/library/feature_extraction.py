@@ -15,7 +15,7 @@ from scipy import stats
 from library.signal_filtering import butter_bandpass,butter_bandpass_filter
 from scipy.signal import welch
 from scipy.integrate import simps
-from pywt import wavedec, upcoef
+# from pywt import wavedec, upcoef
 from scipy.integrate import simps
 fs = 250
 
@@ -27,8 +27,9 @@ def feature_extraction(data):  # data is current channel, temp_data are all 23 c
     win = sf
     # freqs, psd = signal.welch(data, sf, nperseg=win, scaling='density')
     freqs, psd = signal.periodogram(data, sf, window= 'hann',scaling='density', detrend='constant')
-
-
+    # plt.semilogy(freqs,psd[0,0,0])
+    # plt.show()
+    # psd = psd.transpose(3,0,1,2)
     psd_all = np.zeros((25, ))
     for i in range(0, 25):
         low, high = i*2+0.5, (i+1)*2+0.5
@@ -38,7 +39,7 @@ def feature_extraction(data):  # data is current channel, temp_data are all 23 c
         idx = np.zeros(dtype=bool, shape=freqs.shape)
         idx[idx_min:idx_max] = True
         # print('idx_max', idx_min, idx_max)
-        psd_all[i] = simps(psd[idx], freqs[idx])
+        psd_all[i] = simps(psd[i,idx], freqs[idx])
 
 
     DE_all = np.zeros((25, ))
@@ -48,7 +49,7 @@ def feature_extraction(data):  # data is current channel, temp_data are all 23 c
 
             DE_all[m] = 0.5*np.log(2*np.pi*np.exp(1)*np.var(new_data))
 
-    features_1 = psd_all.tolist()
+    # features_1 = psd_all.tolist()
     features_1 = np.log10(features_1)
 
     features_2 = DE_all

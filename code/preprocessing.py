@@ -1,6 +1,6 @@
 import numpy as np
 from tqdm import tqdm
-from load_data import load_data
+from load_data import load_MI
 from library.signal_filtering import signal_filtering
 import os
 
@@ -13,8 +13,8 @@ This pre-processing file is for BCI_IV_2a and BCI_IV_2b datasets
 
 '''
 
-def bci_iv_2a(self):
-    PATH = '/media/patrick/DATA/BCI_Competition/'
+def bci_iv_2a():
+    PATH = './DATA/BCI_IV_2a/'
     data_train_addr  = os.path.join(PATH,'train/data_{}') # subject
     data_test_addr   = os.path.join(PATH,'test/data_{}') # subject
 
@@ -27,15 +27,17 @@ def bci_iv_2a(self):
     for subject_No in (range(1, 10)):
 
         #_________________training_data_________________________#
-        data, label = load_data(subject_No, True, PATH)
+        data, label = load_MI(subject_No, True, PATH) # type(data):ndarray; type(label):ndarray
 
         filter_data = []
 
         for trial_No in range(data.shape[0]):
             data_trial  = data[trial_No]
-            filter_data.append(signal_filtering(data_trial))
+            s = signal_filtering('BCI_IV_2a')
+            filter_data.append(s.main(data_trial))
+            # filter_data.append(signal_filtering(data_trial))
 
-        filter_data = np.array(filter_data)
+        filter_data = np.array(filter_data) # type(filter_data):ndarray
         np.save(data_train_filter_addr.format(subject_No), filter_data)
 
         np.save(data_train_addr.format(subject_No),  data)
@@ -43,11 +45,13 @@ def bci_iv_2a(self):
 
 
         #_________________testing_data_________________________#
-        data, label = load_data(subject_No, False, PATH)
+        data, label = load_MI(subject_No, False, PATH)
         filter_data = []
         for trial_No in range(data.shape[0]):
             data_trial  = data[trial_No]
-            filter_data.append(signal_filtering(data_trial))
+            s = signal_filtering('BCI_IV_2a')
+            filter_data.append(s.main(data_trial))
+            # filter_data.append(signal_filtering(data_trial))
 
         filter_data = np.array(filter_data)
         np.save(data_test_filter_addr.format(subject_No), filter_data)
@@ -58,9 +62,9 @@ def bci_iv_2a(self):
 
 
 
-def bci_iv_2b(self):
+def bci_iv_2b():
 
-    D_PATH = '/media/patrick/DATA/BCICIV_2b/'
+    D_PATH = './DATA/BCI_IV_2b/'
     L_PATH = os.path.join(D_PATH,'true_label/')
     fs = 250
     data_train_addr  = os.path.join(D_PATH,'train/data_{}') # subject
@@ -76,11 +80,13 @@ def bci_iv_2b(self):
 
         #_________________training_data_________________________#
 
-        data, label = load_data(subject_No, True, D_PATH, L_PATH)
+        data, label = load_MI(subject_No, True, D_PATH, L_PATH)
         filter_data = []
         for trial_No in range(data.shape[0]):
             data_trial  = data[trial_No]
-            filter_data.append(signal_filtering(data_trial))
+            s = signal_filtering('BCI_IV_2b')
+            filter_data.append(s.main(data_trial))
+            # filter_data.append(signal_filtering(data_trial))
 
         filter_data = np.array(filter_data)
         np.save(data_train_filter_addr.format(subject_No), filter_data)
@@ -90,30 +96,19 @@ def bci_iv_2b(self):
 
 
         #_________________testing_data_________________________#
-        data, label = load_data(subject_No, False, D_PATH, L_PATH)
+        data, label = load_MI(subject_No, False, D_PATH, L_PATH)
         filter_data = []
         for trial_No in range(data.shape[0]):
             data_trial  = data[trial_No]
-            filter_data.append(signal_filtering(data_trial))
+            s = signal_filtering('BCI_IV_2b')
+            filter_data.append(s.main(data_trial))
+            # filter_data.append(signal_filtering(data_trial))
 
         filter_data = np.array(filter_data)
         np.save(data_test_filter_addr.format(subject_No), filter_data)
 
         np.save(data_test_addr.format(subject_No),  data) #Use Only at the first run of this script
         np.save(label_test_addr.format(subject_No), label)
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
     #

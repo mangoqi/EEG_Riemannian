@@ -37,6 +37,7 @@ def butter_bandpass(lowcut, highcut, fs, order=5):
     low = lowcut / nyq
     high = highcut / nyq
     sos = butter(order, [low, high], analog=False, btype='band', output='sos')
+    # Array of second-order filter coefficients, must have shape (n_sections, 6). Each row corresponds to a second-order section, with the first three columns providing the numerator coefficients and the last three providing the denominator coefficients.
     return sos
 
 
@@ -49,12 +50,12 @@ def butter_bandpass(lowcut, highcut, fs, order=5):
 
 def butter_bandpass_filter(data, lowcut, highcut, fs, order=5):
     sos = butter_bandpass(lowcut, highcut, fs, order=order)
-    y = sosfilt(sos, data)
+    y = sosfilt(sos, data) # Filter data along one dimension using cascaded second-order sections.
 
     return y
 
 
-class signal_filtering():
+class signal_filtering:
     def __init__(self, dataset):
         self.dataset = dataset
 
@@ -68,7 +69,7 @@ class signal_filtering():
             channel_num = 3
         # plt.plot(data.T)
         # plt.show()
-        data = data[:,int(fs*start_point):int(fs*end_point)]
+        data = data[:,int(fs*start_point):int(fs*end_point)] # 为什么load数据的时候用7*250的窗，现在又截成1000的？？？
 
         # for channel in range(data.shape[0]):
         #     data[channel] = (data[channel] - np.min(data[channel]))/ (np.max(data[channel])-np.min(data[channel]))
@@ -77,9 +78,8 @@ class signal_filtering():
         # plt.plot(data[2])
         # plt.show()
         for m in range(0, 25): #frequency band
-            for k in np.arange(0, channel_num):
+            for k in np.arange(0, channel_num):              
                 new_data[m, k] = butter_bandpass_filter(data[k], lowcut= 0.5 + m*2 , highcut= 0.5 +(m+1)*2, fs=250, order=order)
-
                 # if m == 0:
                 #     new_data[m, k,:] = butter_bandpass_filter(data[k,:], lowcut= 0.5 , highcut= 2.0, fs=250, order=order)
                 # elif m == 1:
@@ -91,8 +91,8 @@ class signal_filtering():
                 # else:
                 #     new_data[m, k,:] = butter_bandpass_filter(data[k,:], lowcut= 20.0 ,  highcut= 40, fs=250, order=order)
         #
-        #         plt.plot(new_data[m,k])
-        #         plt.show()
+                # plt.plot(new_data[m,k])
+                # plt.show()
         # exit(0)
         # new_data[m, k,:] = (new_data[m, k,:] - min(new_data[m, k,:]))/ (max(new_data[m, k,:])-min(new_data[m, k,:]))
         # for channel in range(new_data.shape[0]):

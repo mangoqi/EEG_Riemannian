@@ -1,41 +1,27 @@
-from load_data import load_MI
 import os
-from library.signal_filtering import signal_filtering
 import numpy as np
+from library.feature_extraction import feature_extraction
+# from load_data import load_MI
+import preprocessing
+from utils import root_mean_squared_error_numpy, load_dataset_signal_addr, load_dataset_feature_addr, parse_valid_data_all, save_test_result
 
-# load one person data
-PATH = './data/BCICIV_2a/'
-open_path = os.path.join(PATH,'train/')
-data, label = load_MI(1,True,open_path)
-print(data.shape[0])
-print(label.shape)
+# save preprocessing data
+# preprocessing.bci_iv_2a()
 
-data_train_addr  = os.path.join(PATH,'train/data_{}') # subject
-data_test_addr   = os.path.join(PATH,'test/data_{}') # subject
+# extraction features
+data = np.load("./DATA/BCI_IV_2a/train/EEG/filter_data_1.npy") # trial*freq_band*channel*1000
+features = feature_extraction(data[0,:,0,:])
+trial = data.shape[0]
+channel = data.shape[2]
+features = np.zeros(trial,channel)
+for i in range(0,trial):
+    for j in range(0,channel):
+        features[i,j] = feature_extraction(data[i,:,j,:])
 
-label_train_addr = os.path.join(PATH,'train/label_{}') # subject
-label_test_addr  = os.path.join(PATH,'test/label_{}') # subject
 
-data_train_filter_addr = os.path.join(PATH,'train/filter_data_{}') # subject
-data_test_filter_addr  = os.path.join(PATH,'test/filter_data_{}') # subject
+# test part
+path = './DATA/BCI_IV_2a/train/'
+a = np.load('./DATA/BCI_IV_2a/train/filter_data_1.npy',allow_pickle=True)
+print(a.shape[1])
 
-# signal filtering
-for subject_No in (range(1, 10)):
-
-        #_________________training_data_________________________#
-        data, label = load_MI(subject_No,True,open_path)
-
-        filter_data = []
-
-        for trial_No in range(data.shape[0]):
-            data_trial  = data[trial_No]
-            filter_data.append(signal_filtering(data_trial))
-
-        filter_data = np.array(filter_data)
-        np.save(data_train_filter_addr.format(subject_No), filter_data)
-
-        np.save(data_train_addr.format(subject_No),  data)
-        np.save(label_train_addr.format(subject_No), label)
-
-# feature extraction
 

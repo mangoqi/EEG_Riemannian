@@ -4,7 +4,7 @@ from sklearn.preprocessing import StandardScaler
 import pyriemann
 from pyriemann.estimation import Covariances
 from library.spfiltering import ProjCommonSpace
-from library.featuring import Riemann
+from library.featuring import Riemann, NaiveVec
 
 
 
@@ -20,6 +20,7 @@ class spatial_features():
         ''' Learning Processing: from Riemannian Space to Tangent Space '''
 
         geom   = Riemann(n_fb=1, metric='riemann').transform(spoc)
+        # Standardization of a dataset
         scaler = StandardScaler()
         scaler.fit(geom)
         sc = scaler.transform(geom)
@@ -30,7 +31,7 @@ class spatial_features():
 
         '''Estimation of covariance matrix'''
 
-        cov_train = Covariances('oas').transform(X_train)
+        cov_train = Covariances('oas').transform(X_train) # oas is a estimator
         cov_train = cov_train[:, None, :, :]
         cov_test  = Covariances('oas').transform(X_test)
         cov_test  = cov_test[:, None, :, :]
@@ -81,7 +82,7 @@ class spatial_features():
         test_embed  = np.asarray(test_embed)
         train_embed = np.transpose(train_embed, [1, 0, 2])
         test_embed  = np.transpose(test_embed,  [1, 0, 2])
-        train_embed = np.reshape(train_embed, (train_embed.shape[0],train_embed.shape[1]*train_embed.shape[2]))# concatenate feature from different EEG bandds
+        train_embed = np.reshape(train_embed, (train_embed.shape[0],train_embed.shape[1]*train_embed.shape[2]))# concatenate feature from different EEG bands
         test_embed  = np.reshape(test_embed,  (test_embed.shape[0], test_embed.shape[1]*test_embed.shape[2]))
 
         return train_embed, test_embed

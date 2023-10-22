@@ -12,7 +12,7 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.metrics import cohen_kappa_score,accuracy_score
 from sklearn.model_selection import KFold
 import yaml
-import umap
+# import umap
 import matplotlib.patches as mpatches
 from scipy.stats import pearsonr
 from spatial_embedding import spatial_features
@@ -24,7 +24,7 @@ import argparse
 print('ready')
 
 parser = argparse.ArgumentParser(description='Spatial Info')
-parser.add_argument('--dataset', default='BCI_IV_2b', type=str,
+parser.add_argument('--dataset', default='BCI_IV_2a', type=str,
                     help='learning rate')
 parser.add_argument('--cpu-seed', default=0, type=int, metavar='N',
                     help='cpu seed')
@@ -43,6 +43,8 @@ parser.add_argument('--riemannian_dist', default=True, action='store_false')
 
 
 args = parser.parse_args()
+# 获取传入的参数
+print(args)
 state = {k: v for k, v in args._get_kwargs()}
 
 
@@ -205,13 +207,13 @@ class experiments():
         Parameters search: rank of EEG
         '''
 
-        for rank_num in tqdm(range(1, config[self.dataset_name]['Channel_No']+1)):
+        for rank_num in tqdm(range(1, config[self.dataset_name]['Channel_No']+1)): #1:23--->for
 
             Fold_No=5
-            val_acc_result = np.zeros((config[self.dataset_name]['Subject_No'], Fold_No))
-            val_kap_result = np.zeros((config[self.dataset_name]['Subject_No'], Fold_No))
+            val_acc_result = np.zeros((config[self.dataset_name]['Subject_No'], Fold_No)) # 9*5
+            val_kap_result = np.zeros((config[self.dataset_name]['Subject_No'], Fold_No)) # 9*5
 
-            for subject_num in track(range(1, config[self.dataset_name]['Subject_No']+1)):
+            for subject_num in track(range(1, config[self.dataset_name]['Subject_No']+1)): # tqdm means 'progress' 1:10--->for
                 #____________________LOAD DATA____________________#
                 X_train = np.load(data_train_addr.format(subject_num)) #  trials, frequency_band, channel, signal
                 Y_train = np.load(label_train_addr.format(subject_num))
@@ -248,7 +250,7 @@ class experiments():
                         Y_pred = np.argmax(Y_pred, axis=-1)
                     else:
                         Y_pred = np.round(Y_pred)
-                        Y_val  = Y_val.squeeze(1)
+                    Y_val  = Y_val.squeeze()
 
                     val_acc_mlp = np.mean(accuracy_score(Y_val, Y_pred))
                     val_kap_mlp = np.mean(cohen_kappa_score(Y_val, Y_pred))
@@ -279,7 +281,8 @@ if __name__ == '__main__':
     config = load_config('dataset_params.yaml')
     with tf.device("gpu:0"):
         np.random.seed(args.cpu_seed)
-        tf.random.set_random_seed(args.gpu_seed)
+        tf.random.set_seed(args.gpu_seed)
+        # tf.random.set_random_seed(args.gpu_seed)
         experiments(args.dataset).run()
 
 

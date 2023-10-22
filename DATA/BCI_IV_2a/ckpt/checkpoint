@@ -1,0 +1,2 @@
+model_checkpoint_path: "val_spatial_model.ckpt"
+all_model_checkpoint_paths: "val_spatial_model.ckpt"

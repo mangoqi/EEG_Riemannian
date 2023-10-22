@@ -50,7 +50,7 @@ def feature_extraction(data):  # data is current channel, temp_data are all 23 c
             DE_all[m] = 0.5*np.log(2*np.pi*np.exp(1)*np.var(new_data))
 
     # features_1 = psd_all.tolist()
-    features_1 = np.log10(features_1)
+    features_1 = np.log10(psd_all)
 
     features_2 = DE_all
 

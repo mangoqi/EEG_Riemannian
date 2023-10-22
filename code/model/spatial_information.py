@@ -44,11 +44,13 @@ def spatial_info_stream(X_train, X_val, X_test, Y_train, Y_val, Y_test, dataset,
     if dataset =='SEED' or dataset =='BCI_IV_2a':
         Y_train = to_categorical(Y_train)
         Y_val   = to_categorical(Y_val)
-        Y_test  = to_categorical(Y_test)
+        if np.any(np.isnan(Y_test))==False:
+            Y_test  = to_categorical(Y_test)
 
-    Y_train = Y_train.squeeze()
+    Y_train = Y_train.squeeze() # Remove axes of length one from Y_train
     Y_val   = Y_val.squeeze()
-    Y_test  = Y_test.squeeze()
+    if np.any(np.isnan(Y_test))==False:
+        Y_test  = Y_test.squeeze()
 
     inputs = tf.keras.Input(shape=(X_train.shape[1],))
 

@@ -280,7 +280,8 @@ if __name__ == '__main__':
     config = load_config('dataset_params.yaml')
     with tf.device("gpu:0"):
         np.random.seed(args.cpu_seed)
-        tf.random.set_random_seed(args.gpu_seed)
+        tf.random.set_seed(args.gpu_seed)
+        # tf.random.set_random_seed(args.gpu_seed)
         experiments(args.dataset).run()
 
 

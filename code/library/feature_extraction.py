@@ -27,7 +27,8 @@ def feature_extraction(data):  # data is current channel, temp_data are all 23 c
     win = sf
     # freqs, psd = signal.welch(data, sf, nperseg=win, scaling='density')
     freqs, psd = signal.periodogram(data, sf, window= 'hann',scaling='density', detrend='constant')
-    # plt.semilogy(freqs,psd[0,0,0])
+    # fre, psdd = signal.welch(data, sf, window='hann', nperseg=1000, noverlap=1000//2, scaling='density', detrend='constant')
+    # plt.semilogy(freqs,psd)
     # plt.show()
     # psd = psd.transpose(3,0,1,2)
     psd_all = np.zeros((25, ))
@@ -39,7 +40,7 @@ def feature_extraction(data):  # data is current channel, temp_data are all 23 c
         idx = np.zeros(dtype=bool, shape=freqs.shape)
         idx[idx_min:idx_max] = True
         # print('idx_max', idx_min, idx_max)
-        psd_all[i] = simps(psd[i,idx], freqs[idx])
+        psd_all[i] = simps(psd[idx], freqs[idx])
 
 
     DE_all = np.zeros((25, ))

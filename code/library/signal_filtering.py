@@ -17,21 +17,22 @@ import os
 
 #___Notch_Filter___#
 fs=250
-f0 = 50.0  # Frequency to be removed from signal (Hz)
+f0 = 50.0  # Frequency to be removed from signal (Hz) notch_freq
 Q = 30.0  # Quality factor
 w0 = f0/(fs/2)  # Normalized Frequency
 
 
 order = 4
-#___Bandpass_Filter___#
-# def butter_bandpass(lowcut, highcut, fs, order=order):
-#     nyq = 0.5 * fs
-#     low = lowcut / nyq
-#     high = highcut / nyq
-#     b, a = butter(order, [low, high], btype='band')
-#     return b, a
 
+def butter_notch(data, notch_freq, fs, Q):
+    # Q 是品质因数；notch_freq 是陷波滤波的频率
+    nyq = 0.5 * fs
+    freq = notch_freq / nyq
+    b, a = butter(2, freq, btype='bandstop')
+    filtered_data = lfilter(b,a,data)
+    return filtered_data
 
+# ___Bandpass_Filter___#
 def butter_bandpass(lowcut, highcut, fs, order=5):
     nyq = 0.5 * fs
     low = lowcut / nyq
@@ -44,8 +45,8 @@ def butter_bandpass(lowcut, highcut, fs, order=5):
     # def butter_bandpass_filter(data, lowcut, highcut, fs, order=order):
     #     b, a = butter_bandpass(lowcut, highcut, fs, order=order)
     #     y = lfilter(b, a, data)
-    #
-    #
+    
+    
     #     return y
 
 def butter_bandpass_filter(data, lowcut, highcut, fs, order=5):

@@ -50,42 +50,42 @@ from utils import root_mean_squared_error_numpy, load_dataset_signal_addr, load_
 # preprocessing.bci_iv_2a()
 
 # extraction features
-PATH = './DATA/BCI_IV_2a/'
-data_train_addr  = os.path.join(PATH,'train/' + 'Extracted Features/features_{}.npy') # subject
-data_test_addr   = os.path.join(PATH,'test/'  + 'Extracted Features/features_{}.npy') # subject
+# PATH = './DATA/BCI_IV_2a/'
+# data_train_addr  = os.path.join(PATH,'train/' + 'Extracted Features/features_{}.npy') # subject
+# data_test_addr   = os.path.join(PATH,'test/'  + 'Extracted Features/features_{}.npy') # subject
 
-for subject_No in (range(1, 10)):  
-    #_________________training_data_________________________#
-    data = np.load('./DATA/BCI_IV_2a/train/EEG/filter_data_'+str(subject_No)+'.npy') # trial*freq_band*channel*1000
-    features_len = 50 # 25len psd and 25len DE
-    trial = data.shape[0]
-    freq_band = data.shape[1]
-    channel = data.shape[2]
-    timestep = 7
-    L = 1*250
-    features = np.zeros((trial,freq_band,channel,timestep,features_len))
-    for i in range(0,trial):
-        for j in range(0,freq_band):
-            for k in range(0,channel):
-                for l in range(0,data.shape[3]-125,125):
-                    features[i,j,k,int(l/125),:] = feature_extraction(data[i,j,k,l:l+250])
-    np.save(data_train_addr.format(subject_No), features)
+# for subject_No in (range(1, 10)):  
+#     #_________________training_data_________________________#
+#     data = np.load('./DATA/BCI_IV_2a/train/EEG/filter_data_'+str(subject_No)+'.npy') # trial*freq_band*channel*1000
+#     features_len = 50 # 25len psd and 25len DE
+#     trial = data.shape[0]
+#     freq_band = data.shape[1]
+#     channel = data.shape[2]
+#     timestep = 7
+#     L = 1*250
+#     features = np.zeros((trial,freq_band,channel,timestep,features_len))
+#     for i in range(0,trial):
+#         for j in range(0,freq_band):
+#             for k in range(0,channel):
+#                 for l in range(0,data.shape[3]-125,125):
+#                     features[i,j,k,int(l/125),:] = feature_extraction(data[i,j,k,l:l+250])
+#     np.save(data_train_addr.format(subject_No), features)
 
-    #_________________testing_data_________________________#
-    data = np.load('./DATA/BCI_IV_2a/test/EEG/filter_data_'+str(subject_No)+'.npy') # trial*freq_band*channel*1000
-    features_len = 50 # 25len psd and 25len DE
-    trial = data.shape[0]
-    freq_band = data.shape[1]
-    channel = data.shape[2]
-    timestep = 7
-    L = 1*250
-    features = np.zeros((trial,freq_band,channel,timestep,features_len))
-    for i in range(0,trial):
-        for j in range(0,freq_band):
-            for k in range(0,channel):
-                for l in range(0,data.shape[3]-125,125):
-                    features[i,j,k,int(l/125),:] = feature_extraction(data[i,j,k,l:l+250])
-    np.save(data_test_addr.format(subject_No), features)
+#     #_________________testing_data_________________________#
+#     data = np.load('./DATA/BCI_IV_2a/test/EEG/filter_data_'+str(subject_No)+'.npy') # trial*freq_band*channel*1000
+#     features_len = 50 # 25len psd and 25len DE
+#     trial = data.shape[0]
+#     freq_band = data.shape[1]
+#     channel = data.shape[2]
+#     timestep = 7
+#     L = 1*250
+#     features = np.zeros((trial,freq_band,channel,timestep,features_len))
+#     for i in range(0,trial):
+#         for j in range(0,freq_band):
+#             for k in range(0,channel):
+#                 for l in range(0,data.shape[3]-125,125):
+#                     features[i,j,k,int(l/125),:] = feature_extraction(data[i,j,k,l:l+250])
+#     np.save(data_test_addr.format(subject_No), features)
 
 # spatial feature processing
 # experiments('BCI_IV_2a').run_bci()

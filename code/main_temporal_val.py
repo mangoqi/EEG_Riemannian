@@ -206,12 +206,13 @@ class experiments():
         '''
 
         Fold_No=5
-        val_acc_result = np.zeros((config[self.dataset_name]['Subject_No'], Fold_No))
-        val_kap_result = np.zeros((config[self.dataset_name]['Subject_No'], Fold_No))
+        Freq_Num = 25
+        val_acc_result = np.zeros((config[self.dataset_name]['Subject_No'], Fold_No, Freq_Num)) # 25 frequency_band
+        val_kap_result = np.zeros((config[self.dataset_name]['Subject_No'], Fold_No, Freq_Num))
 
         for subject_num in track(range(1, config[self.dataset_name]['Subject_No']+1)):
             #____________________LOAD DATA____________________#
-            X_train = np.load(data_train_addr.format(subject_num)) #  trials, frequency_band, channel, signal
+            X_train = np.load(data_train_addr.format(subject_num)) #  trials, timestep, channel, feature
             Y_train = np.load(label_train_addr.format(subject_num))
             X_test  = np.load(data_test_addr.format(subject_num))
             Y_test  = np.load(label_test_addr.format(subject_num))
@@ -235,25 +236,28 @@ class experiments():
 
                 X_train, X_val, Y_train, Y_val =  train_embed[train_index], train_embed[test_index], train_label[train_index], train_label[test_index]
 
+                for i in range(0,25):
+                    X_train, X_val, X_test = X_train[:,i,:,:], X_val[:,i,:,:], X_test[:,i,:,:]
 
-                Y_pred = temporal_info_stream(X_train, X_val, X_test, Y_train, Y_val, Y_test, self.dataset_name, net_params)
-
-
-                '''
-                2a output label in one-hot form, 2b output label in range (0,1)
-                '''
-                if '2a' in self.dataset_name:
-                    Y_pred = np.argmax(Y_pred, axis=-1)
-                else:
-                    Y_pred = np.round(Y_pred)
-                    Y_val  = Y_val.squeeze(1)
-
-                val_acc_mlp = np.mean(accuracy_score(Y_val, Y_pred))
-                val_kap_mlp = np.mean(cohen_kappa_score(Y_val, Y_pred))
+                    Y_pred = temporal_info_stream(X_train, X_val, X_test, Y_train, Y_val, Y_test, self.dataset_name, net_params)
 
 
-                val_acc_result[subject_num-1,Fold_count-1] = val_acc_mlp
-                val_kap_result[subject_num-1,Fold_count-1] = val_kap_mlp
+                    '''
+                    2a output label in one-hot form, 2b output label in range (0,1)
+                    '''
+                    if '2a' in self.dataset_name:
+                        Y_pred = np.argmax(Y_pred, axis=-1)
+                        Y_val = Y_val.squeeze(1).squeeze(1)
+                    else:
+                        Y_pred = np.round(Y_pred)
+                        Y_val  = Y_val.squeeze(1)
+
+                    val_acc_mlp = np.mean(accuracy_score(Y_val, Y_pred))
+                    val_kap_mlp = np.mean(cohen_kappa_score(Y_val, Y_pred))
+
+
+                    val_acc_result[subject_num-1,Fold_count-1,Freq_Num-1] = val_acc_mlp
+                    val_kap_result[subject_num-1,Fold_count-1,Freq_Num-1] = val_kap_mlp
 
                 Fold_count += 1
 

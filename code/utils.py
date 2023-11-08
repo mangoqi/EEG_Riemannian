@@ -173,7 +173,7 @@ def save_spatial_val_result(dataset, metrics_1_value, metrics_2_value, rank_num)
 
 
 
-def save_temporal_val_result(dataset, metrics_1_value, metrics_2_value, bidirectional_flag, layer_num):
+def save_temporal_val_result(dataset, metrics_1_value, metrics_2_value, bidirectional_flag, layer_num, subject):
     '''
     Save the validation result using only temporal stream of our model
     '''
@@ -202,8 +202,8 @@ def save_temporal_val_result(dataset, metrics_1_value, metrics_2_value, bidirect
             pass
 
 
-    np.savetxt(os.path.join(checkpoint_save_path, metrics_1_name + '.csv'), metrics_1_value, delimiter=",")
-    np.savetxt(os.path.join(checkpoint_save_path, metrics_2_name + '.csv'), metrics_2_value, delimiter=",")
+    np.savetxt(os.path.join(checkpoint_save_path, metrics_1_name + str(subject) + '.csv'), metrics_1_value, delimiter=",")
+    np.savetxt(os.path.join(checkpoint_save_path, metrics_2_name + str(subject) + '.csv'), metrics_2_value, delimiter=",")
 
 
 

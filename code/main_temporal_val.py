@@ -207,37 +207,39 @@ class experiments():
 
         Fold_No=5
         Freq_Num = 25
-        val_acc_result = np.zeros((config[self.dataset_name]['Subject_No'], Fold_No, Freq_Num)) # 25 frequency_band
-        val_kap_result = np.zeros((config[self.dataset_name]['Subject_No'], Fold_No, Freq_Num))
+        # val_acc_result = np.zeros((config[self.dataset_name]['Subject_No'], Fold_No))
+        # val_kap_result = np.zeros((config[self.dataset_name]['Subject_No'], Fold_No))
 
         for subject_num in track(range(1, config[self.dataset_name]['Subject_No']+1)):
             #____________________LOAD DATA____________________#
             X_train = np.load(data_train_addr.format(subject_num)) #  trials, timestep, channel, feature
             Y_train = np.load(label_train_addr.format(subject_num))
-            X_test  = np.load(data_test_addr.format(subject_num))
+            X_testt  = np.load(data_test_addr.format(subject_num))
             Y_test  = np.load(label_test_addr.format(subject_num))
             Y_train = np.expand_dims(Y_train, axis=1) -1  #1,2,3,4 ---> 0,1,2,3
             Y_test  = np.expand_dims(Y_test, axis=1) -1  #1,2,3,4 ---> 0,1,2,3
             ####################################################
 
             X_train, Y_train = parse_valid_data(X_train, Y_train)
-            X_test,  Y_test  = parse_valid_data(X_test,  Y_test)
+            X_testt,  Y_test  = parse_valid_data(X_testt,  Y_test)
 
-            train_embed, train_label = X_train, Y_train
+            train_embedd, train_label = X_train, Y_train
 
 
             kfold = KFold(Fold_No, False, None)
 
 
-            Fold_count = 1
+            # Fold_count = 1
             train_label = Y_train
+            val_acc_result = np.zeros((Freq_Num, Fold_No))
+            val_kap_result = np.zeros((Freq_Num, Fold_No))
+            
+            for i in range(0,Freq_Num):
+                Fold_count = 1
+                train_embed, X_test = train_embedd[:,i,:,:], X_testt[:,i,:,:]
+                for train_index, test_index in kfold.split(train_embed):
 
-            for train_index, test_index in kfold.split(train_embed):
-
-                X_train, X_val, Y_train, Y_val =  train_embed[train_index], train_embed[test_index], train_label[train_index], train_label[test_index]
-
-                for i in range(0,25):
-                    X_train, X_val, X_test = X_train[:,i,:,:], X_val[:,i,:,:], X_test[:,i,:,:]
+                    X_train, X_val, Y_train, Y_val =  train_embed[train_index], train_embed[test_index], train_label[train_index], train_label[test_index]
 
                     Y_pred = temporal_info_stream(X_train, X_val, X_test, Y_train, Y_val, Y_test, self.dataset_name, net_params)
 
@@ -256,12 +258,12 @@ class experiments():
                     val_kap_mlp = np.mean(cohen_kappa_score(Y_val, Y_pred))
 
 
-                    val_acc_result[subject_num-1,Fold_count-1,Freq_Num-1] = val_acc_mlp
-                    val_kap_result[subject_num-1,Fold_count-1,Freq_Num-1] = val_kap_mlp
+                    val_acc_result[i-1,Fold_count-1] = val_acc_mlp
+                    val_kap_result[i-1,Fold_count-1] = val_kap_mlp
 
-                Fold_count += 1
+                    Fold_count += 1
 
-            save_temporal_val_result(self.dataset_name, val_acc_result, val_kap_result, args.BiLSTM, args.layer_num)
+            save_temporal_val_result(self.dataset_name, val_acc_result, val_kap_result, args.BiLSTM, args.layer_num, subject_num)
 
 
     def run(self):
